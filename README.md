@@ -9,3 +9,6 @@ python pacman.py -l bigMaze -z .5 -p SearchAgent
 ```
 和autograde.py的检测.
 
+2018-10-26 20.51
+
+通过了q1-q4的测试
