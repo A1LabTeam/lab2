@@ -8,5 +8,4 @@ python pacman.py -l mediumMaze -p SearchAgent
 python pacman.py -l bigMaze -z .5 -p SearchAgent
 ```
 和autograde.py的检测.
-2018-10-26 20.45
-通过了q1-q4的测试
+
