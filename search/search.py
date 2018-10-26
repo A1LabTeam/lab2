@@ -17,6 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 import util
+from game import *
 
 class SearchProblem:
     """
@@ -88,52 +89,22 @@ def depthFirstSearch(problem):
     #print problem.getStartState()
     #print problem.getSuccessors(problem.getStartState())
     #print problem.isGoalState(problem.getStartState())
+    dataStruct = util.Stack()
+    return genericSearch(problem,dataStruct)
 
-    from game import *
-
-    startState = problem.getStartState()
-    closed = {} # key is the current state, value is the action.
-    open = {} # key is the current state ,value is the action.
-    conStack = util.Stack()
-    open[startState] = (Directions.STOP,(0,0))
-    conStack.push(startState) # (0,0) is the root node.
-    while not conStack.isEmpty():
-        n = conStack.pop()
-        closed[n] = open[n]
-        del open[n]
-
-        if problem.isGoalState(n):
-            result = []
-            curr = n
-            while True:
-                if closed[curr][0]==Directions.STOP:
-                    break
-                result.append(closed[curr][0])
-                curr = closed[curr][1]
-            result.reverse()
-            return result
-
-        for i in problem.getSuccessors(n):
-            child = i[0]
-            if child[0]!=n[0] or child[1] != n[1]:
-                if open.has_key(child):
-                    open[child] = (i[1],n)
-                elif closed.has_key(child):
-                   continue
-                else :
-                    open[child] = (i[1],n)
-                    conStack.push(child)
-    return []
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    dataStruct = util.Queue()
+    return genericSearch(problem,dataStruct)
+
+def uniformcal(item):
+    return item[2]
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    dataStruct = util.PriorityQueueWithFunction(priorityFunction=uniformcal)
+    return genericSearch(problem,dataStruct)
 
 def nullHeuristic(state, problem=None):
     """
@@ -144,8 +115,26 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    import searchAgents
+    dataStruct = util.PriorityQueueWithFunction(priorityFunction=uniformcal)
+    return genericSearch(problem,dataStruct,h=heuristic)
+
+def genericSearch(problem,utilType,h=nullHeuristic):
+    open = utilType
+    closed = []
+    open.push((problem.getStartState(),[],h(problem.getStartState(),problem)))
+    while not open.isEmpty():
+        currentNode = open.pop()
+        if problem.isGoalState(currentNode[0]):
+            return currentNode[1]
+        if currentNode[0] not in closed:
+            closed.append(currentNode[0])
+            for node in problem.getSuccessors(currentNode[0]):
+                actions = currentNode[1]+[node[1]]
+                newCost = h(node[0],problem)+node[2]+problem.getCostOfActions(currentNode[1])
+                #newCost = currentNode[2] + node[2]
+                open.push((node[0],actions,newCost))
+    return []
 
 
 # Abbreviations
